@@ -38,7 +38,7 @@ function QRShareDialog() {
           {[
             { url: DM_URL,   label: 'DM Compass',          sub: '糖尿病病棟OS',   color: 'text-green-400' },
             { url: ENDO_URL, label: 'Endo Compass',         sub: '内分泌負荷試験', color: 'text-blue-400' },
-            { url: EC_URL,   label: 'Electrolyte Compass',  sub: '電解質異常鑑別', color: 'text-amber-400' },
+            { url: EC_URL,   label: 'Electrolyte Compass',  sub: '電解質異常鑑別', color: 'text-orange-500' },
           ].map((app) => (
             <div key={app.url} className="flex flex-col items-center gap-2">
               <img src={qrSrc(app.url)} alt={app.label} className="w-full aspect-square rounded-xl" />

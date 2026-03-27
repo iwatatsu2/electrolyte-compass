@@ -1,15 +1,20 @@
 {
   "name": "Electrolyte Compass",
-  "short_name": "EC",
+  "short_name": "電解質",
   "description": "電解質異常の鑑別・計算ツール",
   "start_url": "/electrolyte-compass/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#06b6d4",
+  "background_color": "#f97316",
+  "theme_color": "#f97316",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230a0a0f' width='192' height='192'/><circle cx='96' cy='96' r='70' fill='%2306b6d4'/><text x='96' y='110' font-size='44' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>EC</text></svg>",
+      "src": "/electrolyte-compass/icon.svg",
       "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/electrolyte-compass/icon.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml"
     }
   ]
