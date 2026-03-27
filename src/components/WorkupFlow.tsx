@@ -189,15 +189,16 @@ function InputStep({ step, onComplete }: InputStepProps) {
       <div className="space-y-2 mb-3">
         {step.inputs?.map(inp => (
           <div key={inp.key} className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground w-32 flex-shrink-0">{inp.label}</label>
-            <input
-              type="number"
-              value={values[inp.key] || ''}
-              onChange={e => setValues(v => ({ ...v, [inp.key]: e.target.value }))}
-              className="flex-1 bg-input border border-border rounded px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1"
-              style={{ '--tw-ring-color': ACCENT } as React.CSSProperties}
-            />
-            <span className="text-xs text-muted-foreground w-20 flex-shrink-0">{inp.unit}</span>
+            <label className="text-xs text-muted-foreground w-28 shrink-0">{inp.label}</label>
+            <div className="flex flex-1 min-w-0 items-center border border-border rounded overflow-hidden bg-input">
+              <input
+                type="number"
+                value={values[inp.key] || ''}
+                onChange={e => setValues(v => ({ ...v, [inp.key]: e.target.value }))}
+                className="flex-1 min-w-0 bg-transparent px-2 py-1 text-xs text-foreground focus:outline-none"
+              />
+              <span className="text-xs text-muted-foreground px-2 py-1 bg-muted border-l border-border whitespace-nowrap shrink-0">{inp.unit}</span>
+            </div>
           </div>
         ))}
       </div>
