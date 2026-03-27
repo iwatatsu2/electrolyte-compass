@@ -4,14 +4,14 @@ export function Section11_Author() {
   return (
     <div className="space-y-4">
       <div className="bg-card border border-border rounded-lg p-6">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-2xl font-bold text-primary">
-            Dr
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-foreground">Dr.いわたつ</h2>
-            <p className="text-sm text-primary">糖尿病・内分泌専門医</p>
-          </div>
+        <div className="flex flex-col items-center mb-4">
+          <img
+            src="/dr-iwatatsu.png"
+            alt="Dr.いわたつ イラスト"
+            style={{ width: 'clamp(160px, 40vw, 220px)', height: 'auto' }}
+          />
+          <h2 className="text-lg font-bold text-foreground mt-2">Dr.いわたつ</h2>
+          <p className="text-sm text-primary">糖尿病・内分泌専門医</p>
         </div>
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>内分泌・代謝内科専門医として日々の臨床で感じた「使えるリファレンスが欲しい」という思いからこのアプリを作成しました。</p>
