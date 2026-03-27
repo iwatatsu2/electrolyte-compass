@@ -6,7 +6,7 @@ export function Section11_Author() {
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex flex-col items-center mb-4">
           <img
-            src="dr-iwatatsu.png"
+            src={`${import.meta.env.BASE_URL}dr-iwatatsu.png`}
             alt="Dr.いわたつ イラスト"
             style={{ width: 'clamp(160px, 40vw, 220px)', height: 'auto' }}
           />
