@@ -1,6 +1,6 @@
 {
   "name": "Electrolyte Compass",
-  "short_name": "電解質",
+  "short_name": "Electrolyte Compass",
   "description": "電解質異常の鑑別・計算ツール",
   "start_url": "/electrolyte-compass/",
   "display": "standalone",
