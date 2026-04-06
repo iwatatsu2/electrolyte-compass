@@ -104,7 +104,7 @@ export const mgFlow: WorkupFlowDef = {
       options: [
         { label: '利尿薬（ループ利尿薬・サイアザイド）', value: 'diuretic', description: 'Mgの再吸収阻害。最も多い医原性原因' },
         { label: 'シスプラチン・アミノグリコシド・アムフォテリシンB', value: 'nephrotoxin', description: '尿細管障害によるMg排泄亢進。シスプラチンは長期持続' },
-        { key: 'pp', label: 'プロトンポンプ阻害薬（PPI）長期服用', value: 'ppi', description: 'TRPM6発現低下→腸管吸収低下＋腎保持障害' },
+        { label: 'プロトンポンプ阻害薬（PPI）長期服用', value: 'ppi', description: 'TRPM6発現低下→腸管吸収低下＋腎保持障害' },
         { label: 'Gitelman症候群・Bartter症候群', value: 'bartter', description: '遺伝性尿細管障害。低K低Mg合併が特徴' },
         { label: '高Ca血症・高血糖・アルコール', value: 'other_renal', description: 'Ca・グルコースとの競合的排泄阻害' },
       ],

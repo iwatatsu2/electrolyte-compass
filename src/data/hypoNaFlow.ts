@@ -1,61 +1,120 @@
 import type { WorkupFlowDef } from '../components/WorkupFlow';
 
+/** input ステップ用：Record として安全にアクセス */
+function asRecord(v: Record<string, string> | string): Record<string, string> {
+  return typeof v === 'string' ? {} : v;
+}
+
 export const hypoNaFlow: WorkupFlowDef = {
   title: '低Na血症 鑑別フロー',
   requiredTests: [
-    { key: 'na', label: 'Na', unit: 'mEq/L', category: 'blood' },
-    { key: 'k', label: 'K', unit: 'mEq/L', category: 'blood' },
-    { key: 'cl', label: 'Cl', unit: 'mEq/L', category: 'blood' },
-    { key: 'bun', label: 'BUN', unit: 'mg/dL', category: 'blood' },
-    { key: 'cr', label: 'Cr', unit: 'mg/dL', category: 'blood' },
-    { key: 'gluc', label: '血糖', unit: 'mg/dL', category: 'blood' },
-    { key: 'alb', label: 'Alb', unit: 'g/dL', category: 'blood' },
-    { key: 'tprot', label: 'T-Prot', unit: 'g/dL', category: 'blood' },
-    { key: 'sOsm', label: '血清浸透圧', unit: 'mOsm/kg', category: 'blood' },
-    { key: 'uNa', label: '尿Na', unit: 'mEq/L', category: 'urine' },
-    { key: 'uK', label: '尿K', unit: 'mEq/L', category: 'urine' },
-    { key: 'uCr', label: '尿Cr', unit: 'mg/dL', category: 'urine' },
-    { key: 'uOsm', label: '尿浸透圧', unit: 'mOsm/kg', category: 'urine' },
-    { key: 'ecf', label: '細胞外液量評価（浮腫・頸静脈怒張・脱水徴候）', unit: '', category: 'clinical' },
+    { key: 'na',    label: 'Na',    unit: 'mEq/L',   category: 'blood' },
+    { key: 'k',     label: 'K',     unit: 'mEq/L',   category: 'blood' },
+    { key: 'cl',    label: 'Cl',    unit: 'mEq/L',   category: 'blood' },
+    { key: 'bun',   label: 'BUN',   unit: 'mg/dL',   category: 'blood' },
+    { key: 'cr',    label: 'Cr',    unit: 'mg/dL',   category: 'blood' },
+    { key: 'gluc',  label: '血糖',  unit: 'mg/dL',   category: 'blood' },
+    { key: 'alb',   label: 'Alb',   unit: 'g/dL',    category: 'blood' },
+    { key: 'tprot', label: 'T-Prot', unit: 'g/dL',   category: 'blood' },
+    { key: 'sOsm',  label: '血清浸透圧（実測）', unit: 'mOsm/kg', category: 'blood' },
+    { key: 'uNa',   label: '尿Na',  unit: 'mEq/L',   category: 'urine' },
+    { key: 'uK',    label: '尿K',   unit: 'mEq/L',   category: 'urine' },
+    { key: 'uCr',   label: '尿Cr',  unit: 'mg/dL',   category: 'urine' },
+    { key: 'uOsm',  label: '尿浸透圧', unit: 'mOsm/kg', category: 'urine' },
+    { key: 'ecf',   label: '細胞外液量評価（浮腫・頸静脈怒張・脱水徴候）', unit: '', category: 'clinical' },
   ],
   startId: 'step1',
   steps: [
+    // ─────────────────────────────────────────
+    // Step 1: 血清浸透圧の評価（計算 or 実測）
+    // ─────────────────────────────────────────
     {
       id: 'step1',
       title: 'Step 1: 血清浸透圧の評価',
-      description: 'Na・血糖・BUNを入力して計算浸透圧を求めます',
+      description: 'Na・血糖・BUNから計算します。実測値がある場合は「任意入力」に入れると優先されます。',
       type: 'input',
       inputs: [
-        { key: 'na', label: 'Na', unit: 'mEq/L' },
+        { key: 'na',   label: 'Na',   unit: 'mEq/L' },
         { key: 'gluc', label: '血糖', unit: 'mg/dL' },
-        { key: 'bun', label: 'BUN', unit: 'mg/dL' },
+        { key: 'bun',  label: 'BUN',  unit: 'mg/dL' },
+        {
+          key: 'sOsm',
+          label: '血清浸透圧（実測）',
+          unit: 'mOsm/kg',
+          optional: true,
+          note: '実測値を入力するとフローに優先使用されます（計算値も参考表示）',
+        },
       ],
       calc: (v) => {
-        const na = parseFloat(v.na);
+        const na   = parseFloat(v.na);
         const gluc = parseFloat(v.gluc);
-        const bun = parseFloat(v.bun);
-        if (isNaN(na) || isNaN(gluc) || isNaN(bun)) return [];
-        const osm = 2 * na + gluc / 18 + bun / 2.8;
-        let interp = '';
-        let color: 'red' | 'yellow' | 'green' = 'red';
-        if (osm < 275) { interp = '低張性 → 真の低Na血症'; color = 'red'; }
-        else if (osm <= 295) { interp = '等張性 → 偽性低Na（高脂血症・高蛋白血症）'; color = 'yellow'; }
-        else { interp = '高張性 → 高浸透圧物質（高血糖・マンニトール）'; color = 'yellow'; }
-        return [
-          { label: '計算浸透圧', value: `${osm.toFixed(0)} mOsm/kg`, interpretation: interp, color },
-        ];
+        const bun  = parseFloat(v.bun);
+        const measured = parseFloat(v.sOsm);
+        const results = [];
+
+        // 計算浸透圧（Na/Gluc/BUN が揃えば常に表示）
+        if (!isNaN(na) && !isNaN(gluc) && !isNaN(bun)) {
+          const calc = 2 * na + gluc / 18 + bun / 2.8;
+          results.push({
+            label: '計算浸透圧',
+            value: `${calc.toFixed(0)} mOsm/kg`,
+            interpretation: `2×Na + 血糖/18 + BUN/2.8`,
+            color: 'green' as const,
+          });
+        }
+
+        // 判定に使う値
+        const osm = !isNaN(measured) ? measured : (!isNaN(na) && !isNaN(gluc) && !isNaN(bun) ? 2 * na + parseFloat(v.gluc) / 18 + parseFloat(v.bun) / 2.8 : NaN);
+
+        if (!isNaN(measured)) {
+          results.push({
+            label: '実測浸透圧（優先使用）',
+            value: `${measured} mOsm/kg`,
+            interpretation: '↑ フローの判定にはこの値を使用します',
+            color: 'yellow' as const,
+          });
+        }
+
+        if (!isNaN(osm)) {
+          let interp = '';
+          let color: 'red' | 'yellow' | 'green' = 'red';
+          if (osm < 275)       { interp = '低張性 → 真の低Na血症'; color = 'red'; }
+          else if (osm <= 295) { interp = '等張性 → 偽性低Na（高脂血症・高蛋白血症）'; color = 'yellow'; }
+          else                  { interp = '高張性 → 高浸透圧物質（高血糖・マンニトール）'; color = 'yellow'; }
+          results.push({ label: '判定', value: osm < 275 ? '低張性' : osm <= 295 ? '等張性' : '高張性', interpretation: interp, color });
+        }
+
+        return results;
       },
       next: (v) => {
-        const na = parseFloat(v.na);
+        const na   = parseFloat(v.na);
         const gluc = parseFloat(v.gluc);
-        const bun = parseFloat(v.bun);
-        if (isNaN(na) || isNaN(gluc) || isNaN(bun)) return 'step1';
-        const osm = 2 * na + gluc / 18 + bun / 2.8;
+        const bun  = parseFloat(v.bun);
+        const measured = parseFloat(v.sOsm);
+        const osm = !isNaN(measured) ? measured : 2 * na + gluc / 18 + bun / 2.8;
+        if (isNaN(osm)) return 'step1';
         if (osm < 275) return 'step2';
         if (osm <= 295) return 'result_isotonic';
         return 'result_hypertonic';
       },
+      ruledOut: (v) => {
+        const r = asRecord(v);
+        const na   = parseFloat(r.na);
+        const gluc = parseFloat(r.gluc);
+        const bun  = parseFloat(r.bun);
+        const measured = parseFloat(r.sOsm);
+        const osm = !isNaN(measured) ? measured : 2 * na + gluc / 18 + bun / 2.8;
+        if (isNaN(osm)) return [];
+        if (osm >= 275) {
+          return ['SIADH', '腎性Na喪失', '腎外性Na喪失', '心不全による低Na', '肝硬変による低Na', 'ネフローゼによる低Na', '原発性多飲症', '腎不全による低Na'];
+        }
+        return [];
+      },
     },
+
+    // ─────────────────────────────────────────
+    // 等張性・高張性の結果
+    // ─────────────────────────────────────────
     {
       id: 'result_isotonic',
       title: '診断: 等張性低Na（偽性低Na）',
@@ -74,6 +133,10 @@ export const hypoNaFlow: WorkupFlowDef = {
       treatment: '原疾患（高血糖など）の治療。インスリン投与で血糖を下げるとNaは改善する。',
       resultColor: 'yellow',
     },
+
+    // ─────────────────────────────────────────
+    // Step 2: 尿浸透圧（ADH活性の評価）
+    // ─────────────────────────────────────────
     {
       id: 'step2',
       title: 'Step 2: 尿浸透圧の評価',
@@ -98,6 +161,16 @@ export const hypoNaFlow: WorkupFlowDef = {
         if (isNaN(uOsm)) return 'step2';
         return uOsm < 100 ? 'result_water_diuresis' : 'step3';
       },
+      ruledOut: (v) => {
+        const r = asRecord(v);
+        const uOsm = parseFloat(r.uOsm);
+        if (isNaN(uOsm)) return [];
+        if (uOsm < 100) {
+          return ['SIADH', '心不全による低Na', '肝硬変による低Na', 'ネフローゼによる低Na', '腎不全による低Na', '腎性Na喪失', '腎外性Na喪失'];
+        } else {
+          return ['原発性多飲症', '低溶質食（tea & toast）'];
+        }
+      },
     },
     {
       id: 'result_water_diuresis',
@@ -108,6 +181,10 @@ export const hypoNaFlow: WorkupFlowDef = {
       treatment: '水分摂取制限。原因行動の修正。低溶質食の場合は栄養指導。',
       resultColor: 'green',
     },
+
+    // ─────────────────────────────────────────
+    // Step 3: 細胞外液量
+    // ─────────────────────────────────────────
     {
       id: 'step3',
       title: 'Step 3: 細胞外液量の評価（臨床判断）',
@@ -135,7 +212,24 @@ export const hypoNaFlow: WorkupFlowDef = {
         if (v === 'normal') return 'step4b';
         return 'step4c';
       },
+      ruledOut: (v) => { const r = asRecord(v);
+        const sel = typeof v === 'string' ? v : '';
+        if (sel === 'low') {
+          return ['SIADH', '心不全による低Na', '肝硬変による低Na', 'ネフローゼによる低Na', '腎不全による低Na'];
+        }
+        if (sel === 'normal') {
+          return ['心不全による低Na', '肝硬変による低Na', 'ネフローゼによる低Na', '腎外性Na喪失', '腎性Na喪失'];
+        }
+        if (sel === 'high') {
+          return ['SIADH', '腎外性Na喪失', '腎性Na喪失'];
+        }
+        return [];
+      },
     },
+
+    // ─────────────────────────────────────────
+    // Step 4a: 低ECF → 尿Na
+    // ─────────────────────────────────────────
     {
       id: 'step4a',
       title: 'Step 4a: 低ECF → 尿Na測定',
@@ -158,6 +252,13 @@ export const hypoNaFlow: WorkupFlowDef = {
         if (isNaN(uNa)) return 'step4a';
         return uNa < 20 ? 'result_extrarenal' : 'result_renal_loss';
       },
+      ruledOut: (v) => {
+        const r = asRecord(v);
+        const uNa = parseFloat(r.uNa);
+        if (isNaN(uNa)) return [];
+        if (uNa < 20) return ['腎性Na喪失（利尿薬・副腎不全・CSW）'];
+        return ['腎外性Na喪失（嘔吐・下痢・熱傷）'];
+      },
     },
     {
       id: 'result_extrarenal',
@@ -177,17 +278,21 @@ export const hypoNaFlow: WorkupFlowDef = {
       treatment: '原疾患治療。副腎不全は必ずコルチゾール補充（ヒドロコルチゾン）。循環血漿量補正には生食を使用。',
       resultColor: 'red',
     },
+
+    // ─────────────────────────────────────────
+    // Step 4b: 等容量 → SIADH確認
+    // ─────────────────────────────────────────
     {
       id: 'step4b',
       title: 'Step 4b: 等容量 → SIADH確認',
       description: '尿Na・尿浸透圧でSIADH診断基準を確認します',
       type: 'input',
       inputs: [
-        { key: 'uNa', label: '尿Na', unit: 'mEq/L' },
+        { key: 'uNa',  label: '尿Na',   unit: 'mEq/L' },
         { key: 'uOsm', label: '尿浸透圧', unit: 'mOsm/kg' },
       ],
       calc: (v) => {
-        const uNa = parseFloat(v.uNa);
+        const uNa  = parseFloat(v.uNa);
         const uOsm = parseFloat(v.uOsm);
         const results = [];
         if (!isNaN(uNa)) {
@@ -213,6 +318,15 @@ export const hypoNaFlow: WorkupFlowDef = {
         if (isNaN(uNa)) return 'step4b';
         return uNa >= 40 ? 'result_siadh' : 'result_other_euvolemic';
       },
+      ruledOut: (v) => {
+        const r = asRecord(v);
+        const uNa  = parseFloat(r.uNa);
+        const uOsm = parseFloat(r.uOsm);
+        const ruled: string[] = [];
+        if (!isNaN(uNa) && uNa < 40) ruled.push('SIADH');
+        if (!isNaN(uOsm) && uOsm <= 100) ruled.push('SIADH（ADH抑制のため）');
+        return ruled;
+      },
     },
     {
       id: 'result_siadh',
@@ -232,6 +346,10 @@ export const hypoNaFlow: WorkupFlowDef = {
       treatment: '原疾患の治療。甲状腺機能低下症はレボチロキシン。副腎不全はコルチゾール補充。',
       resultColor: 'yellow',
     },
+
+    // ─────────────────────────────────────────
+    // Step 4c: 高ECF → 尿Na
+    // ─────────────────────────────────────────
     {
       id: 'step4c',
       title: 'Step 4c: 高ECF → 尿Na測定',
@@ -253,6 +371,13 @@ export const hypoNaFlow: WorkupFlowDef = {
         const uNa = parseFloat(v.uNa);
         if (isNaN(uNa)) return 'step4c';
         return uNa < 20 ? 'result_edematous' : 'result_renal_failure';
+      },
+      ruledOut: (v) => {
+        const r = asRecord(v);
+        const uNa = parseFloat(r.uNa);
+        if (isNaN(uNa)) return [];
+        if (uNa < 20) return ['腎不全による低Na'];
+        return ['心不全による低Na', '肝硬変による低Na', 'ネフローゼによる低Na'];
       },
     },
     {

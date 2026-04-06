@@ -7,12 +7,20 @@ export interface RequiredTest {
   category: 'blood' | 'urine' | 'clinical';
 }
 
+export interface FlowInputDef {
+  key: string;
+  label: string;
+  unit: string;
+  optional?: boolean;
+  note?: string;
+}
+
 export interface FlowStep {
   id: string;
   title: string;
   description?: string;
   type: 'input' | 'select' | 'result';
-  inputs?: Array<{ key: string; label: string; unit: string }>;
+  inputs?: FlowInputDef[];
   calc?: (values: Record<string, string>) => Array<{
     label: string;
     value: string;
@@ -26,6 +34,8 @@ export interface FlowStep {
   detail?: string;
   treatment?: string;
   resultColor?: 'red' | 'yellow' | 'green';
+  /** 入力値（input型）または選択値（select型）から否定できる疾患名リストを返す */
+  ruledOut?: (valuesOrSelected: Record<string, string> | string) => string[];
 }
 
 export interface WorkupFlowDef {
@@ -41,6 +51,7 @@ interface StepRecord {
   calcResults?: Array<{ label: string; value: string; interpretation?: string; color?: 'red' | 'yellow' | 'green' }>;
   selectedOption?: string;
   selectedLabel?: string;
+  ruledOutDiseases?: string[];
 }
 
 const ACCENT = '#f97316';
@@ -123,6 +134,34 @@ function RequiredTestsPanel({ tests }: RequiredTestsPanelProps) {
   );
 }
 
+/** 否定できた疾患パネル */
+function RuledOutPanel({ diseases }: { diseases: string[] }) {
+  const [open, setOpen] = useState(true);
+  if (diseases.length === 0) return null;
+  return (
+    <div className="bg-green-900/20 border border-green-700/50 rounded-lg mb-4 overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-2.5 text-left"
+      >
+        <span className="text-xs font-bold text-green-400">✅ これまでの検査値で否定できた疾患</span>
+        <span className="text-xs text-green-600">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3">
+          <div className="flex flex-wrap gap-1.5">
+            {diseases.map((d, i) => (
+              <span key={i} className="text-xs bg-green-900/40 border border-green-700/50 text-green-300 rounded-full px-2.5 py-0.5 line-through decoration-green-500">
+                {d}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface SummaryStepProps {
   record: StepRecord;
   step: FlowStep;
@@ -174,7 +213,8 @@ function InputStep({ step, onComplete }: InputStepProps) {
   const [values, setValues] = useState<Record<string, string>>({});
 
   const calcResults = step.calc ? step.calc(values) : [];
-  const allFilled = step.inputs ? step.inputs.every(inp => values[inp.key] && values[inp.key] !== '') : true;
+  const requiredInputs = step.inputs?.filter(inp => !inp.optional) ?? [];
+  const allFilled = requiredInputs.every(inp => values[inp.key] && values[inp.key] !== '');
 
   const handleNext = () => {
     if (!step.next) return;
@@ -182,12 +222,17 @@ function InputStep({ step, onComplete }: InputStepProps) {
     onComplete(values, nextId, calcResults);
   };
 
+  const optionalInputs = step.inputs?.filter(inp => inp.optional) ?? [];
+  const normalInputs = step.inputs?.filter(inp => !inp.optional) ?? [];
+
   return (
     <div className="bg-card border rounded-lg p-4 mb-4" style={{ borderColor: ACCENT }}>
       <h3 className="text-sm font-bold mb-1" style={{ color: ACCENT }}>{step.title}</h3>
       {step.description && <p className="text-xs text-muted-foreground mb-3">{step.description}</p>}
+
+      {/* 必須入力 */}
       <div className="space-y-2 mb-3">
-        {step.inputs?.map(inp => (
+        {normalInputs.map(inp => (
           <div key={inp.key} className="flex items-center gap-2">
             <label className="text-xs text-muted-foreground w-28 shrink-0">{inp.label}</label>
             <div className="flex flex-1 min-w-0 items-center border border-border rounded overflow-hidden bg-input">
@@ -202,6 +247,32 @@ function InputStep({ step, onComplete }: InputStepProps) {
           </div>
         ))}
       </div>
+
+      {/* 任意入力（実測値など） */}
+      {optionalInputs.length > 0 && (
+        <div className="mb-3 border border-dashed border-border rounded p-2.5 space-y-2">
+          <p className="text-xs text-muted-foreground font-semibold">任意入力（実測値がある場合）</p>
+          {optionalInputs.map(inp => (
+            <div key={inp.key}>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground w-28 shrink-0">{inp.label}</label>
+                <div className="flex flex-1 min-w-0 items-center border border-border rounded overflow-hidden bg-input">
+                  <input
+                    type="number"
+                    value={values[inp.key] || ''}
+                    onChange={e => setValues(v => ({ ...v, [inp.key]: e.target.value }))}
+                    className="flex-1 min-w-0 bg-transparent px-2 py-1 text-xs text-foreground focus:outline-none"
+                    placeholder="入力すると優先されます"
+                  />
+                  <span className="text-xs text-muted-foreground px-2 py-1 bg-muted border-l border-border whitespace-nowrap shrink-0">{inp.unit}</span>
+                </div>
+              </div>
+              {inp.note && <p className="text-xs text-muted-foreground mt-0.5 pl-[7.5rem]">{inp.note}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
       {calcResults.length > 0 && (
         <div className="bg-muted rounded p-3 mb-3 space-y-1">
           {calcResults.map((r, i) => (
@@ -302,6 +373,11 @@ export function WorkupFlow({ def }: WorkupFlowProps) {
   const stepMap = new Map(def.steps.map(s => [s.id, s]));
   const currentStep = stepMap.get(currentStepId);
 
+  // 履歴から否定できた疾患を集約（重複排除）
+  const allRuledOut = Array.from(new Set(
+    history.flatMap(r => r.ruledOutDiseases ?? [])
+  ));
+
   const handleReset = () => {
     setHistory([]);
     setCurrentStepId(def.startId);
@@ -312,12 +388,17 @@ export function WorkupFlow({ def }: WorkupFlowProps) {
     nextId: string,
     calcResults: Array<{ label: string; value: string; interpretation?: string; color?: 'red' | 'yellow' | 'green' }>
   ) => {
-    setHistory(h => [...h, { stepId: currentStepId, inputValues: values, calcResults }]);
+    const step = stepMap.get(currentStepId);
+    const ruledOutDiseases = step?.ruledOut ? step.ruledOut(values) : [];
+    setHistory(h => [...h, { stepId: currentStepId, inputValues: values, calcResults, ruledOutDiseases }]);
     setCurrentStepId(nextId);
   };
 
   const handleSelectComplete = (value: string, label: string, nextId: string) => {
-    setHistory(h => [...h, { stepId: currentStepId, selectedOption: value, selectedLabel: label }]);
+    // select ステップで否定できる疾患があれば値として渡す
+    const step = stepMap.get(currentStepId);
+    const ruledOutDiseases = step?.ruledOut ? step.ruledOut(value) : [];
+    setHistory(h => [...h, { stepId: currentStepId, selectedOption: value, selectedLabel: label, ruledOutDiseases }]);
     setCurrentStepId(nextId);
   };
 
@@ -326,6 +407,9 @@ export function WorkupFlow({ def }: WorkupFlowProps) {
   return (
     <div>
       <RequiredTestsPanel tests={def.requiredTests} />
+
+      {/* 否定できた疾患パネル */}
+      <RuledOutPanel diseases={allRuledOut} />
 
       {/* History summary */}
       {history.length > 0 && (

@@ -129,7 +129,7 @@ export const hyperNaFlow: WorkupFlowDef = {
       type: 'select',
       options: [
         { label: '発熱・高温環境・熱傷', value: 'insensible', description: '不感蒸泄の増加' },
-        { key: 'hypo', label: '意識障害・嚥下障害・口渇感なし', value: 'access', description: '水摂取制限（意識障害・介護者依存）' },
+        { label: '意識障害・嚥下障害・口渇感なし', value: 'access', description: '水摂取制限（意識障害・介護者依存）' },
         { label: '高張食塩水・重炭酸Na大量投与歴', value: 'iatrogenic', description: '医原性Na負荷' },
       ],
       onSelect: (v) => {
