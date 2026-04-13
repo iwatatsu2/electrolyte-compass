@@ -57,8 +57,20 @@ export const pFlow: WorkupFlowDef = {
         const p = parseFloat(v.p);
         if (isNaN(p)) return 'step1';
         if (p > 4.5) return 'step_highP';
-        return 'step2_lowP';
+        if (p < 2.5) return 'step2_lowP';
+        return 'result_normalP';
       },
+    },
+
+    // 正常P
+    {
+      id: 'result_normalP',
+      type: 'result',
+      title: '結果: P値は正常範囲',
+      diagnosis: 'P正常（2.5〜4.5 mg/dL）',
+      detail: 'P値は正常範囲内です。臨床的にP異常が疑われる場合は再検をご検討ください。',
+      treatment: '特に治療介入不要。',
+      resultColor: 'green',
     },
 
     // 低P → FEP計算

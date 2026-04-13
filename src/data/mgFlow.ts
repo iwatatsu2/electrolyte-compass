@@ -227,7 +227,7 @@ export const mgFlow: WorkupFlowDef = {
       type: 'result',
       title: '診断: 高Mg血症',
       diagnosis: '高Mg血症（腎不全・Mg製剤過剰投与）',
-      detail: 'Mg > 4 mEq/L：悪心・潮紅・低血圧。> 6：深部腱反射消失（毒性の早期サイン）。> 8：呼吸筋麻痺。> 12：心停止。\n原因：腎不全＋Mg製剤・子癇前症治療での硫酸Mg過剰・Mg含有制酸薬大量摂取。',
+      detail: 'Mg > 4.9 mg/dL（≒4 mEq/L）：悪心・潮紅・低血圧。> 7.3 mg/dL（≒6 mEq/L）：深部腱反射消失（毒性の早期サイン）。> 9.7 mg/dL（≒8 mEq/L）：呼吸筋麻痺。> 14.6 mg/dL（≒12 mEq/L）：心停止。\n原因：腎不全＋Mg製剤・子癇前症治療での硫酸Mg過剰・Mg含有制酸薬大量摂取。',
       treatment: '軽症：Mg含有薬剤中止・補液。\n中等症（反射消失）：グルコン酸Ca（Ca拮抗）iv・透析準備。\n重症（呼吸抑制・心停止）：グルコン酸Ca 1〜2g iv（即効拮抗）＋透析。腎機能正常例はループ利尿薬＋補液でMg排泄。',
       resultColor: 'red',
     },

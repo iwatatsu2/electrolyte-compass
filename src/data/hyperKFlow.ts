@@ -63,7 +63,7 @@ export const hyperKFlow: WorkupFlowDef = {
         {
           label: '偽性高K疑い',
           value: 'pseudo',
-          description: '溶血あり / WBC > 100,000 / 血小板 > 400万 / 止血帯長時間使用',
+          description: '溶血あり / WBC > 100,000 / 血小板 > 100万 / 止血帯長時間使用',
         },
       ],
       onSelect: (v) => v === 'ok' ? 'step3' : 'result_pseudo',
@@ -73,7 +73,7 @@ export const hyperKFlow: WorkupFlowDef = {
       title: '診断: 偽性高K血症',
       type: 'result',
       diagnosis: '偽性高K血症',
-      detail: '溶血・白血球増多症（> 100,000/μL）・血小板増多症（> 400万/μL）・採血手技問題（止血帯長時間・強い吸引）による。真の高K血症ではない。',
+      detail: '溶血・白血球増多症（> 100,000/μL）・血小板増多症（> 100万/μL）・採血手技問題（止血帯長時間・強い吸引）による。真の高K血症ではない。',
       treatment: '再採血（溶血なし・適切な手技で）。または血漿K測定で確認。',
       resultColor: 'yellow',
     },

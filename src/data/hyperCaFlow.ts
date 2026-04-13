@@ -76,8 +76,8 @@ export const hyperCaFlow: WorkupFlowDef = {
           results.push({
             label: 'PTH',
             value: `${pth} pg/mL`,
-            interpretation: pth > 65 ? '高値/不適切高値 → 副甲状腺由来の高Ca（PHPT・FHH）' : pth < 15 ? '抑制 → 非副甲状腺性（悪性腫瘍・VitD中毒・サルコイドーシス）' : '正常範囲',
-            color: (pth > 65 ? 'yellow' : pth < 15 ? 'red' : 'green') as 'yellow' | 'red' | 'green',
+            interpretation: pth > 65 ? '高値 → 副甲状腺由来の高Ca（PHPT・FHH）' : pth < 15 ? '抑制 → 非副甲状腺性（悪性腫瘍・VitD中毒・サルコイドーシス）' : '不適切正常（高Ca下でPTH非抑制 → PHPT示唆）',
+            color: (pth > 65 ? 'yellow' : pth < 15 ? 'red' : 'yellow') as 'yellow' | 'red',
           });
         }
         if (!isNaN(p)) {
