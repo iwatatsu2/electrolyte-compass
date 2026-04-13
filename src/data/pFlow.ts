@@ -35,7 +35,7 @@ export const pFlow: WorkupFlowDef = {
           let color: 'red' | 'yellow' | 'green' = 'green';
           if (p < 1.0) { direction = '重症低P（< 1.0）緊急補充が必要。呼吸筋麻痺・溶血リスク'; color = 'red'; }
           else if (p < 2.5) { direction = '低P血症（< 2.5）'; color = 'yellow'; }
-          else if (p > 5.5) { direction = '高P血症（> 5.5）'; color = 'red'; }
+          else if (p > 4.5) { direction = '高P血症（> 4.5）'; color = 'red'; }
           else { direction = '正常範囲（2.5〜4.5 mg/dL）'; }
           results.push({ label: 'P値', value: `${p} mg/dL`, interpretation: direction, color });
         }
@@ -47,7 +47,7 @@ export const pFlow: WorkupFlowDef = {
           results.push({
             label: 'Ca × P積',
             value: `${caXp.toFixed(0)} mg²/dL²`,
-            interpretation: caXp > 55 ? '> 55: 異所性石灰化リスク（血管・軟部組織）' : '< 55: 許容範囲',
+            interpretation: caXp > 55 ? '> 55: 異所性石灰化リスク（※KDOQI 2003基準。KDIGO 2017では個別判断を推奨）' : '≤ 55: 許容範囲（※KDIGO 2017ではCa×P積の一律目標は非推奨）',
             color: (caXp > 55 ? 'red' : 'green') as 'red' | 'green',
           });
         }
@@ -278,8 +278,8 @@ export const pFlow: WorkupFlowDef = {
       type: 'result',
       title: '診断: CKD/AKIによる高P',
       diagnosis: 'CKD/AKIによる高P血症（GFR低下）',
-      detail: 'GFR < 30 mL/min で顕著。高P＋低Ca＋PTH上昇（二次性副甲状腺機能亢進症）＋活性型VitD低下 → CKD-MBD。Ca × P > 55 は血管石灰化リスク。',
-      treatment: 'P制限食（800〜1000 mg/日）。リン吸着薬（炭酸Ca・セベラマー・炭酸ランタン）。活性型VitD。透析患者：シナカルセト。CaXP積を55以下に。',
+      detail: 'GFR < 30 mL/min で顕著。高P＋低Ca＋PTH上昇（二次性副甲状腺機能亢進症）＋活性型VitD低下 → CKD-MBD。',
+      treatment: 'P制限食（800〜1000 mg/日）。リン吸着薬（炭酸Ca・セベラマー・炭酸ランタン）。活性型VitD。透析患者：シナカルセト。KDIGO 2017ではCa×P積の一律目標値は設けず、高P血症の是正を優先。',
       resultColor: 'red',
     },
     {

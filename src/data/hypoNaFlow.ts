@@ -266,7 +266,7 @@ export const hypoNaFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: '腎外性Na喪失',
       detail: '嘔吐・下痢・熱傷・第3腔喪失（膵炎・腸閉塞）。腎臓はNaを保持しようとしているため尿Naは低値。',
-      treatment: '生理食塩水で循環血漿量補正。補正速度に注意（慢性例は < 10 mEq/L/day でODS予防）。',
+      treatment: '生理食塩水で循環血漿量補正。補正速度に注意（慢性例は < 10 mEq/L/day、ハイリスク例〔アルコール・低K・低栄養・肝疾患〕は < 8 mEq/L/day でODS予防）。',
       resultColor: 'yellow',
     },
     {
@@ -334,7 +334,7 @@ export const hypoNaFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: 'SIADH疑い',
       detail: '診断基準: 低張性低Na + 尿浸透圧 > 100 mOsm/kg + 尿Na > 40 mEq/L + 副腎・甲状腺・腎機能正常。\n除外必須: 甲状腺機能低下症（TSH測定）、コルチゾール欠乏（コルチゾール・ACTH測定）。',
-      treatment: '水制限（500〜1000 mL/day）・食塩補充・重症例はバプタン系（トルバプタン）・けいれん時は3%食塩水（最初の数時間1〜2 mEq/L/hr）。',
+      treatment: '水制限（500〜1000 mL/day）・食塩補充・重症例はバプタン系（トルバプタン）・けいれん時は3%食塩水（最初の数時間1〜2 mEq/L/hr）。補正速度：< 10 mEq/L/day（ハイリスク例は < 8）でODS予防。',
       resultColor: 'red',
     },
     {

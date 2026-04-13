@@ -136,8 +136,7 @@ export const acidBaseFlow: WorkupFlowDef = {
           let judge = '';
           let color: 'red' | 'yellow' | 'green' = 'yellow';
           if (ratio !== null) {
-            if (ratio < 0.4) { judge = '純粋正常AG代謝性アシドーシス'; }
-            else if (ratio < 1.0) { judge = '混合性（高AG＋正常AG代謝性アシドーシス）'; color = 'red'; }
+            if (ratio < 1.0) { judge = '混合性（高AG＋正常AG代謝性アシドーシス）'; color = 'red'; }
             else if (ratio <= 2.0) { judge = '単純高AG代謝性アシドーシス'; color = 'red'; }
             else { judge = '高AG＋代謝性アルカローシス混合'; color = 'yellow'; }
             results.push({ label: 'デルタ比', value: ratio.toFixed(2), interpretation: judge, color });

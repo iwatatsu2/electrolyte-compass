@@ -77,7 +77,7 @@ export const hypoKFlow: WorkupFlowDef = {
           results.push({
             label: 'TTKG',
             value: ttkg.toFixed(1),
-            interpretation: ttkg < 2 ? '< 2: 腎外性喪失（腎はKを保持）' : '≥ 2: 腎性喪失（腎からのK排泄亢進）',
+            interpretation: ttkg < 2 ? '< 2: 腎外性喪失（腎はKを保持）' : '≥ 2: 腎性喪失（腎からのK排泄亢進）※TTKGの妥当性は近年議論あり。FEKも参考に',
             color: (ttkg < 2 ? 'yellow' : 'red') as 'yellow' | 'red',
           });
         }

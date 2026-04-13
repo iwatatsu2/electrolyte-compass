@@ -83,14 +83,14 @@ export const hyperNaFlow: WorkupFlowDef = {
       type: 'select',
       options: [
         {
-          label: 'DDAVP投与後 尿浸透圧 > 300 mOsm/kg（尿量減少）',
+          label: 'DDAVP投与後 尿浸透圧 > 600 mOsm/kgまたは50%以上上昇',
           value: 'central',
-          description: 'DDPAVPに反応あり → 中枢性尿崩症',
+          description: 'DDAVPに反応あり → 中枢性尿崩症',
         },
         {
-          label: 'DDAVP投与後も尿浸透圧 < 300 mOsm/kg（無反応）',
+          label: 'DDAVP投与後も尿浸透圧上昇なし（< 50%上昇）',
           value: 'nephrogenic',
-          description: 'DDPAVPに無反応 → 腎性尿崩症',
+          description: 'DDAVPに無反応 → 腎性尿崩症',
         },
         {
           label: 'DDAVP未施行・評価中',
@@ -172,7 +172,7 @@ export const hyperNaFlow: WorkupFlowDef = {
       title: '診断: 部分的尿崩症',
       type: 'result',
       diagnosis: '部分的尿崩症',
-      detail: '尿浸透圧が300〜600の範囲。完全な尿崩症よりADH反応が残存。DDPAVPに部分的反応あり。精査にて中枢性・腎性の完全型への移行を監視。',
+      detail: '尿浸透圧が300〜600の範囲。完全な尿崩症よりADH反応が残存。DDAVPに部分的反応あり。精査にて中枢性・腎性の完全型への移行を監視。',
       treatment: '水分摂取増加。DDAVP少量から試験的投与。原因精査（MRI・ホルモン検査）。',
       resultColor: 'yellow',
     },

@@ -109,7 +109,7 @@ export const akiFlow: WorkupFlowDef = {
           results.push({
             label: 'FENa',
             value: `${fena.toFixed(2)}%`,
-            interpretation: fena < 1 ? '< 1%: 腎前性AKI（尿細管機能正常・Na保持）' : '> 2%: 腎性AKI（尿細管障害→Na保持できない）',
+            interpretation: fena < 1 ? '< 1%: 腎前性AKI（尿細管機能正常・Na保持）' : fena <= 2 ? '1〜2%: グレーゾーン（臨床所見と合わせて判断）' : '> 2%: 腎性AKI（尿細管障害→Na保持できない）',
             color: (fena < 1 ? 'yellow' : 'red') as 'yellow' | 'red',
           });
         }

@@ -46,7 +46,7 @@ export const hyperKFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: '緊急性高！即座に対応',
       detail: 'ECG変化は致死性不整脈のリスクを示す。直ちに治療を開始する。',
-      treatment: '① グルコン酸Ca 1A iv（心保護・即効・5分以内に効果）\n② GI療法（ブドウ糖50g＋インスリン10単位 iv）\n③ 炭酸水素Na（代謝性アシドーシス合併時）\n④ β刺激薬吸入（サルブタモール）\n⑤ カリメート/ケイキサレート（腸管K排泄）\n⑥ 透析（上記で改善なし・腎不全）',
+      treatment: '① グルコン酸Ca 1A iv（心保護・即効・5分以内に効果）\n② GI療法（50%ブドウ糖50mL＝25g＋インスリン10単位 iv）※低血糖リスク軽減のため25gが推奨\n③ 炭酸水素Na（代謝性アシドーシス合併時）\n④ β刺激薬吸入（サルブタモール）\n⑤ カリメート/ケイキサレート（腸管K排泄）\n⑥ 透析（上記で改善なし・腎不全）',
       resultColor: 'red',
     },
     {
@@ -103,8 +103,8 @@ export const hyperKFlow: WorkupFlowDef = {
           results.push({
             label: 'TTKG',
             value: ttkg.toFixed(1),
-            interpretation: ttkg < 5 ? '< 5: 腎排泄低下（低アルドステロン・腎不全）' : '≥ 5: 腎排泄は保たれている',
-            color: (ttkg < 5 ? 'red' : 'green') as 'red' | 'green',
+            interpretation: ttkg < 7 ? '< 7: 腎排泄低下（低アルドステロン・腎不全）※高K時の正常は>7-10' : '≥ 7: 腎排泄は保たれている',
+            color: (ttkg < 7 ? 'red' : 'green') as 'red' | 'green',
           });
         }
         if (!isNaN(uK) && !isNaN(uCr) && !isNaN(sK) && !isNaN(sCr) && sK > 0 && uCr > 0) {
@@ -125,7 +125,7 @@ export const hyperKFlow: WorkupFlowDef = {
         const sOsm = parseFloat(v.sOsm);
         if (isNaN(uK) || isNaN(sK) || isNaN(uOsm) || isNaN(sOsm) || sK <= 0 || sOsm <= 0) return 'step3';
         const ttkg = (uK / sK) / (uOsm / sOsm);
-        return ttkg < 5 ? 'step4a' : 'result_transcellular';
+        return ttkg < 7 ? 'step4a' : 'result_transcellular';
       },
     },
     {
@@ -156,7 +156,7 @@ export const hyperKFlow: WorkupFlowDef = {
         {
           label: '薬剤性',
           value: 'drug',
-          description: 'ACE阻害薬・ARB・NSAIDs・ヘパリン・カルシウム拮抗薬・スピロノラクトン',
+          description: 'ACE阻害薬・ARB・NSAIDs・ヘパリン・カルシニューリン阻害薬（CyA/TAC）・スピロノラクトン',
         },
       ],
       onSelect: (v) => {
@@ -188,7 +188,7 @@ export const hyperKFlow: WorkupFlowDef = {
       title: '診断: 薬剤性高K',
       type: 'result',
       diagnosis: '薬剤性高K',
-      detail: 'ACE阻害薬・ARB・NSAIDs・ヘパリン・カルシウム拮抗薬・スピロノラクトン・TMP（ST合剤）。',
+      detail: 'ACE阻害薬・ARB・NSAIDs・ヘパリン・カルシニューリン阻害薬（CyA/TAC）・スピロノラクトン・TMP（ST合剤）。',
       treatment: '原因薬剤の中止または減量。腎機能・K値のモニタリング。代替薬への変更を検討。',
       resultColor: 'yellow',
     },
