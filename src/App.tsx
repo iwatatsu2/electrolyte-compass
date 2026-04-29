@@ -12,6 +12,7 @@ import { Section8_Mg } from '@/sections/Section8_Mg';
 import { Section9_P } from '@/sections/Section9_P';
 import { Section10_AKI } from '@/sections/Section10_AKI';
 import { Section11_Author } from '@/sections/Section11_Author';
+import { InstallBanner } from '@/components/InstallBanner';
 
 const DM_URL = 'https://iwatatsu2.github.io/dm-compass/';
 const ENDO_URL = 'https://endoguide.vercel.app/endocrine';
@@ -219,6 +220,7 @@ export default function App() {
           </div>
         </main>
       </div>
+      <InstallBanner />
     </div>
   );
 }
