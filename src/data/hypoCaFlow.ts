@@ -34,7 +34,8 @@ export const hypoCaFlow: WorkupFlowDef = {
         let color: 'red' | 'yellow' | 'green' = 'green';
         if (corrCa < 7.0) { severity = '重症（< 7.0）緊急Ca補充が必要。痙攣・不整脈リスク'; color = 'red'; }
         else if (corrCa < 8.0) { severity = '中等度（7.0〜8.0）症状に応じて補充'; color = 'yellow'; }
-        else { severity = '軽度（8.0〜8.5）経過観察または経口補充'; color = 'green'; }
+        else if (corrCa < 8.5) { severity = '軽度（8.0〜8.5）経過観察または経口補充'; color = 'green'; }
+        else { severity = '正常範囲（≥ 8.5）'; color = 'green'; }
         return [
           { label: '補正Ca', value: `${corrCa.toFixed(1)} mg/dL`, interpretation: '正常値: 8.5〜10.2 mg/dL', color: (corrCa < 8.0 ? 'red' : 'green') as 'red' | 'green' },
           { label: '重症度', value: severity, interpretation: '', color },

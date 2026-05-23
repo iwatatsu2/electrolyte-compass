@@ -44,7 +44,7 @@ export const acidBaseFlow: WorkupFlowDef = {
           else if (paco2 < 35) { disorder = '呼吸性アルカローシス（一次性）'; color = 'yellow'; }
           else { disorder = '混合性アルカローシス'; color = 'yellow'; }
         } else {
-          disorder = 'pH正常範囲（混合性障害または代償完了）'; color = 'green';
+          disorder = 'pH正常範囲 → AGを確認（混合性障害が隠れている可能性）'; color = 'yellow';
         }
         return [
           { label: '一次性障害', value: disorder, color },
@@ -58,7 +58,8 @@ export const acidBaseFlow: WorkupFlowDef = {
         if (ph < 7.35 && hco3 < 22) return 'step2_met_acid';
         if (ph < 7.35 && paco2 > 45) return 'step2_resp_acid';
         if (ph > 7.45 && hco3 > 26) return 'step2_met_alk';
-        if (ph > 7.45 && paco2 < 35) return 'result_resp_alk';
+        if (ph > 7.45 && paco2 < 35) return 'step2_resp_alk';
+        // pH正常でもAG確認で混合性障害を検出
         return 'step2_met_acid';
       },
     },
@@ -234,27 +235,80 @@ export const acidBaseFlow: WorkupFlowDef = {
       next: () => 'result_resp_acid',
     },
 
-    // 代謝性アルカローシス
+    // 代謝性アルカローシス → 代償評価 + 尿Cl
     {
       id: 'step2_met_alk',
-      title: 'Step 2: 代謝性アルカローシス 原因評価',
-      description: '尿Clで食塩反応性 vs 食塩抵抗性を鑑別します',
+      title: 'Step 2: 代謝性アルカローシス 代償評価 + 原因評価',
+      description: '呼吸代償を確認し、尿Clで食塩反応性 vs 食塩抵抗性を鑑別します',
       type: 'input',
       inputs: [
+        { key: 'hco3', label: 'HCO₃', unit: 'mEq/L' },
+        { key: 'paco2', label: '実測PaCO₂', unit: 'mmHg' },
         { key: 'uCl', label: '尿Cl', unit: 'mEq/L' },
       ],
       calc: (v) => {
+        const hco3 = parseFloat(v.hco3);
+        const paco2 = parseFloat(v.paco2);
         const uCl = parseFloat(v.uCl);
-        if (isNaN(uCl)) return [];
-        const judge = uCl < 20 ? '食塩反応性（Cl欠乏）→ 嘔吐・利尿薬・低Cl摂取' : '食塩抵抗性 → 高アルドステロン・Mg欠乏・Bartter/Gitelman';
-        const color: 'red' | 'yellow' | 'green' = uCl < 20 ? 'yellow' : 'red';
-        return [{ label: '尿Cl', value: `${uCl} mEq/L`, interpretation: judge, color }];
+        const results = [];
+        if (!isNaN(hco3) && !isNaN(paco2)) {
+          const predPaco2 = 0.7 * hco3 + 21;
+          const predLow = predPaco2 - 2;
+          const predHigh = predPaco2 + 2;
+          results.push({ label: '予測PaCO₂', value: `${predLow.toFixed(0)}〜${predHigh.toFixed(0)} mmHg`, interpretation: '0.7 × HCO₃ + 21 ± 2', color: 'green' as 'green' });
+          let compJudge = '';
+          let compColor: 'red' | 'yellow' | 'green' = 'green';
+          if (paco2 >= predLow && paco2 <= predHigh) { compJudge = '適切な呼吸代償'; }
+          else if (paco2 > predHigh) { compJudge = '呼吸性アシドーシス合併（PaCO₂が予測より高い）'; compColor = 'red'; }
+          else { compJudge = '呼吸性アルカローシス合併（PaCO₂が予測より低い）'; compColor = 'yellow'; }
+          results.push({ label: '代償評価', value: compJudge, interpretation: '', color: compColor });
+        }
+        if (!isNaN(uCl)) {
+          const judge = uCl < 20 ? '食塩反応性（Cl欠乏）→ 嘔吐・利尿薬・低Cl摂取' : '食塩抵抗性 → 高アルドステロン・Mg欠乏・Bartter/Gitelman';
+          const color: 'red' | 'yellow' | 'green' = uCl < 20 ? 'yellow' : 'red';
+          results.push({ label: '尿Cl', value: `${uCl} mEq/L`, interpretation: judge, color });
+        }
+        return results;
       },
       next: (v) => {
         const uCl = parseFloat(v.uCl);
         if (isNaN(uCl)) return 'step2_met_alk';
         return uCl < 20 ? 'result_met_alk_cl_responsive' : 'result_met_alk_cl_resistant';
       },
+    },
+
+    // 呼吸性アルカローシス → 代償評価
+    {
+      id: 'step2_resp_alk',
+      title: 'Step 2: 呼吸性アルカローシス 代償評価',
+      description: '急性 vs 慢性の判定と代謝代償を評価します',
+      type: 'input',
+      inputs: [
+        { key: 'paco2', label: 'PaCO₂', unit: 'mmHg' },
+        { key: 'hco3', label: 'HCO₃', unit: 'mEq/L' },
+      ],
+      calc: (v) => {
+        const paco2 = parseFloat(v.paco2);
+        const hco3 = parseFloat(v.hco3);
+        if (isNaN(paco2) || isNaN(hco3)) return [];
+        const dPaco2 = 40 - paco2;
+        const acuteHco3 = 24 - dPaco2 * 0.2;
+        const chronicHco3 = 24 - dPaco2 * 0.4;
+        let interp = '';
+        let color: 'red' | 'yellow' | 'green' = 'yellow';
+        const diffAcute = Math.abs(hco3 - acuteHco3);
+        const diffChronic = Math.abs(hco3 - chronicHco3);
+        if (diffAcute <= 2) { interp = '急性呼吸性アルカローシス（代償適切）'; }
+        else if (diffChronic <= 3) { interp = '慢性呼吸性アルカローシス（代償適切）'; }
+        else if (hco3 > acuteHco3 + 2) { interp = '代謝性アルカローシス合併'; color = 'yellow'; }
+        else { interp = '代謝性アシドーシス合併'; color = 'red'; }
+        return [
+          { label: '急性代償予測 HCO₃', value: `${acuteHco3.toFixed(1)} mEq/L`, interpretation: 'PaCO₂ 10mmHg低下ごとにHCO₃ 2低下', color: 'green' as 'green' },
+          { label: '慢性代償予測 HCO₃', value: `${chronicHco3.toFixed(1)} mEq/L`, interpretation: 'PaCO₂ 10mmHg低下ごとにHCO₃ 4低下', color: 'green' as 'green' },
+          { label: '代償評価', value: interp, interpretation: '', color },
+        ];
+      },
+      next: () => 'result_resp_alk',
     },
 
     // Results
@@ -318,7 +372,7 @@ export const acidBaseFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: '呼吸性アルカローシス',
       detail: '過換気症候群・低酸素（高地・肺塞栓・肺炎）・敗血症（初期）・妊娠・肝不全・サリチル酸中毒（初期）・中枢神経障害。',
-      treatment: '原疾患治療。過換気症候群：ペーパーバッグ法（慎重に）・抗不安薬。低酸素への対処。',
+      treatment: '原疾患治療。過換気症候群：抗不安薬・リラクゼーション。低酸素への対処。\n⚠ ペーパーバッグ法は現在非推奨（低酸素の誤診時に危険：肺塞栓・気胸の除外が必須）。',
       resultColor: 'yellow',
     },
     {

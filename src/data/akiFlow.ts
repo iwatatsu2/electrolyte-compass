@@ -37,7 +37,7 @@ export const akiFlow: WorkupFlowDef = {
           const ratio = cr / crBase;
           let stage = '';
           let color: 'red' | 'yellow' | 'green' = 'green';
-          if (ratio >= 3.0 || cr >= 4.0) { stage = 'Stage 3（重症）透析適応を検討'; color = 'red'; }
+          if (ratio >= 3.0 || (cr >= 4.0 && rise >= 0.5)) { stage = 'Stage 3（重症）透析適応を検討'; color = 'red'; }
           else if (ratio >= 2.0) { stage = 'Stage 2（中等症）'; color = 'yellow'; }
           else if (ratio >= 1.5 || rise >= 0.3) { stage = 'Stage 1（軽症）'; color = 'yellow'; }
           else { stage = 'AKI基準未満'; color = 'green'; }

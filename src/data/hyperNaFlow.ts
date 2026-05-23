@@ -39,7 +39,7 @@ export const hyperNaFlow: WorkupFlowDef = {
         else { severity = '軽度高Na（145〜150）'; }
         return [
           { label: '重症度', value: severity, interpretation: '', color },
-          { label: '自由水欠乏量', value: `${fwd.toFixed(1)} L`, interpretation: '補正目標：0.5 mEq/L/hr（慢性例は慎重に）', color: 'yellow' as 'yellow' },
+          { label: '自由水欠乏量', value: `${fwd.toFixed(1)} L`, interpretation: '補正速度：慢性例 ≤ 0.5 mEq/L/hr、24時間で最大10〜12 mEq/L。急性例（< 48h）はより速い補正可（1〜2 mEq/L/hr）', color: 'yellow' as 'yellow' },
         ];
       },
       next: (v) => {
@@ -129,11 +129,13 @@ export const hyperNaFlow: WorkupFlowDef = {
       type: 'select',
       options: [
         { label: '発熱・高温環境・熱傷', value: 'insensible', description: '不感蒸泄の増加' },
+        { label: '下痢（特に浸透圧性・ラクツロース使用）', value: 'diarrhea', description: '消化管からの低張液喪失。小児・高齢者に多い' },
         { label: '意識障害・嚥下障害・口渇感なし', value: 'access', description: '水摂取制限（意識障害・介護者依存）' },
         { label: '高張食塩水・重炭酸Na大量投与歴', value: 'iatrogenic', description: '医原性Na負荷' },
       ],
       onSelect: (v) => {
         if (v === 'insensible') return 'result_insensible_loss';
+        if (v === 'diarrhea') return 'result_diarrhea';
         if (v === 'access') return 'result_restricted_access';
         return 'result_sodium_load';
       },
@@ -146,7 +148,7 @@ export const hyperNaFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: '中枢性尿崩症（CDI）',
       detail: 'ADH産生障害。原因：視床下部・下垂体手術後・外傷・腫瘍（頭蓋咽頭腫・転移）・サルコイドーシス・ランゲルハンス細胞組織球症・特発性。\nMRI（下垂体・視床下部）・抗ADH抗体を検索。',
-      treatment: 'デスモプレシン（DDAVP）点鼻薬・経口薬。急性期は低張液（D5W・0.45%食塩水）補充。補正速度：慢性例は0.5 mEq/L/hr以内。',
+      treatment: 'デスモプレシン（DDAVP）点鼻薬・経口薬。急性期は低張液（D5W・0.45%食塩水）補充。\n補正速度：慢性例 ≤ 0.5 mEq/L/hr、24時間で最大10〜12 mEq/L。Naは4〜6時間ごとに再検。',
       resultColor: 'red',
     },
     {
@@ -155,7 +157,7 @@ export const hyperNaFlow: WorkupFlowDef = {
       type: 'result',
       diagnosis: '腎性尿崩症（NDI）',
       detail: 'ADH受容体・アクアポリン障害。原因：リチウム（最多）・デメクロサイクリン・低K血症・高Ca血症・閉塞性腎症・慢性腎不全・先天性（AVPR2・AQP2変異）。',
-      treatment: '原因薬剤中止。低塩食＋サイアザイド系利尿薬（逆説的効果）。低K・低Ca補正。リチウム中止困難な場合はアミロライド。',
+      treatment: '原因薬剤中止。低塩食＋サイアザイド系利尿薬（逆説的効果）。低K・低Ca補正。リチウム中止困難な場合はアミロライド。\n補正速度：慢性例 ≤ 10〜12 mEq/24h。過急速補正は脳浮腫のリスク。',
       resultColor: 'red',
     },
     {
@@ -201,6 +203,15 @@ export const hyperNaFlow: WorkupFlowDef = {
       diagnosis: '不感蒸泄増加（発熱・高温・熱傷）',
       detail: '発熱1℃上昇で不感蒸泄約10%増加。熱傷では大量の水分が皮膚から喪失。口渇があれば水分摂取で代償されるが、意識障害・嚥下障害では代償不全。',
       treatment: '低張液（0.45%食塩水 or D5W）補充。解熱。熱傷は熱傷面積に応じた補液（Parkland式）。',
+      resultColor: 'yellow',
+    },
+    {
+      id: 'result_diarrhea',
+      title: '診断: 下痢による高Na',
+      type: 'result',
+      diagnosis: '消化管からの低張液喪失（下痢）',
+      detail: '下痢液はNa含有が血漿より低い（低張液）ため、水がNaより多く喪失し高Naとなる。浸透圧性下痢（ラクツロース・ソルビトール）・感染性下痢・小児の急性胃腸炎に多い。',
+      treatment: '経口補水液（ORS）または低張液（0.45%食塩水・D5W）で補正。補正速度：慢性例 ≤ 10〜12 mEq/24h。下痢の原因治療。',
       resultColor: 'yellow',
     },
     {

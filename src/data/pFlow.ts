@@ -241,7 +241,7 @@ export const pFlow: WorkupFlowDef = {
       title: '診断: DKA回復期の低P',
       diagnosis: 'DKA回復期・インスリン投与による低P',
       detail: 'インスリンによりPが細胞内移行（K・Mgと同様）。DKA時は高P→回復期に急速低下。P < 1.0 mg/dL は緊急補充。',
-      treatment: 'P < 1.0 または症状あり：リン酸K静注（0.08〜0.16 mmol/kg/hr）。P 1.0〜2.5：経口リン補充。K補充と組み合わせるとリン酸Kが効率的。',
+      treatment: 'P < 1.0 または症状あり：リン酸K静注（15〜30 mmol を6時間かけて投与）。P 1.0〜2.5：経口リン補充。K補充と組み合わせるとリン酸Kが効率的。\n⚠ IV phosphate投与中はCaモニター必須（Ca-P沈殿による低Ca血症リスク）。心電図モニター下で投与。',
       resultColor: 'yellow',
     },
     {

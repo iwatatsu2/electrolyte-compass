@@ -77,8 +77,8 @@ export const hypoKFlow: WorkupFlowDef = {
           results.push({
             label: 'TTKG',
             value: ttkg.toFixed(1),
-            interpretation: ttkg < 2 ? '< 2: 腎外性喪失（腎はKを保持）' : '≥ 2: 腎性喪失（腎からのK排泄亢進）※TTKGの妥当性は近年議論あり。FEKも参考に',
-            color: (ttkg < 2 ? 'yellow' : 'red') as 'yellow' | 'red',
+            interpretation: ttkg < 3 ? '< 3: 腎外性喪失（腎はKを保持）' : '≥ 3: 腎性喪失（腎からのK排泄亢進）※TTKGは現在推奨されない指標。FEKやスポット尿K/Cr比（> 13 mEq/gで腎性）を優先',
+            color: (ttkg < 3 ? 'yellow' : 'red') as 'yellow' | 'red',
           });
         }
         if (!isNaN(uK) && !isNaN(uCr) && !isNaN(sK) && !isNaN(sCr) && sK > 0 && uCr > 0) {
@@ -99,7 +99,7 @@ export const hypoKFlow: WorkupFlowDef = {
         const sOsm = parseFloat(v.sOsm);
         if (isNaN(uK) || isNaN(sK) || isNaN(uOsm) || isNaN(sOsm)) return 'step2';
         const ttkg = (uK / sK) / (uOsm / sOsm);
-        return ttkg < 2 ? 'step3_extrarenal' : 'step3_renal';
+        return ttkg < 3 ? 'step3_extrarenal' : 'step3_renal';
       },
     },
 
@@ -107,7 +107,7 @@ export const hypoKFlow: WorkupFlowDef = {
     {
       id: 'step3_extrarenal',
       title: 'Step 3a: 腎外性K喪失の原因',
-      description: '腎外性K喪失（TTKG < 2）の原因を選択します',
+      description: '腎外性K喪失（TTKG < 3）の原因を選択します',
       type: 'select',
       options: [
         { label: '下痢・下剤乱用・腸瘻', value: 'gi', description: '腸管からのK喪失。代謝性アシドーシスを合併することが多い' },

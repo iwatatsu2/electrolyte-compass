@@ -32,7 +32,7 @@ export const mgFlow: WorkupFlowDef = {
         if (!isNaN(mg)) {
           let severity = '';
           let color: 'red' | 'yellow' | 'green' = 'green';
-          if (mg < 1.0) { severity = '重症低Mg（< 1.0）静注補充が必要。Torsadeリスク'; color = 'red'; }
+          if (mg < 1.0) { severity = '重症低Mg（< 1.0）MgSO₄ 1〜2g iv/1時間で静注。Torsadeリスク（Torsade時はMgSO₄ 2g iv push）'; color = 'red'; }
           else if (mg < 1.5) { severity = '中等度低Mg（1.0〜1.5）症状・合併に応じて補充'; color = 'yellow'; }
           else if (mg > 4.0) { severity = '高Mg血症（> 4.0）深部腱反射消失・呼吸抑制リスク'; color = 'red'; }
           else if (mg > 2.5) { severity = '軽度高Mg（2.5〜4.0）'; color = 'yellow'; }
@@ -201,7 +201,7 @@ export const mgFlow: WorkupFlowDef = {
       title: '診断: 消化管からのMg喪失',
       diagnosis: '消化管からのMg喪失（下痢・吸収不良）',
       detail: '急性・慢性下痢・潰瘍性大腸炎・クローン病・セリアック病・短腸症候群。腸管からのMg吸収障害と直接喪失。',
-      treatment: '酸化Mg経口補充（吸収不良例では効果限定的）。重症例はMgSO₄静注。原疾患治療。',
+      treatment: '酸化Mg経口補充（300〜600 mg/日。吸収不良例では効果限定的）。重症例はMgSO₄ 1〜2g iv/1時間、その後4〜8g/日で持続。原疾患治療。',
       resultColor: 'yellow',
     },
     {

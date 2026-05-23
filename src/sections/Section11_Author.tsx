@@ -11,7 +11,7 @@ export function Section11_Author() {
             style={{ width: 'clamp(160px, 40vw, 220px)', height: 'auto' }}
           />
           <h2 className="text-lg font-bold text-foreground mt-2">Dr.いわたつ</h2>
-          <p className="text-sm text-primary">糖尿病・内分泌専門医</p>
+          <p className="text-sm text-primary">糖尿病・内分泌専門医・指導医</p>
         </div>
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>内分泌・代謝内科専門医として日々の臨床で感じた「使えるリファレンスが欲しい」という思いからこのアプリを作成しました。</p>
