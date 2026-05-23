@@ -24,14 +24,21 @@ export const akiFlow: WorkupFlowDef = {
       type: 'input',
       inputs: [
         { key: 'cr', label: 'Cr（現在）', unit: 'mg/dL' },
-        { key: 'cr_base', label: 'Cr（ベースライン）', unit: 'mg/dL' },
+        { key: 'cr_base', label: 'Cr（ベースライン）', unit: 'mg/dL', optional: true, note: '不明時は空欄（eGFR 75 mL/min基準で推定）' },
         { key: 'bun', label: 'BUN', unit: 'mg/dL' },
       ],
       calc: (v) => {
         const cr = parseFloat(v.cr);
-        const crBase = parseFloat(v.cr_base);
+        let crBase = parseFloat(v.cr_base);
         const bun = parseFloat(v.bun);
         const results = [];
+        // ベースライン不明時はeGFR 75 mL/min基準で推定（KDIGO推奨）
+        // 簡易推定: Cr ≈ 1.0 mg/dL（成人平均）
+        let baseEstimated = false;
+        if (isNaN(crBase) && !isNaN(cr)) {
+          crBase = 1.0;
+          baseEstimated = true;
+        }
         if (!isNaN(cr) && !isNaN(crBase)) {
           const rise = cr - crBase;
           const ratio = cr / crBase;
@@ -41,7 +48,8 @@ export const akiFlow: WorkupFlowDef = {
           else if (ratio >= 2.0) { stage = 'Stage 2（中等症）'; color = 'yellow'; }
           else if (ratio >= 1.5 || rise >= 0.3) { stage = 'Stage 1（軽症）'; color = 'yellow'; }
           else { stage = 'AKI基準未満'; color = 'green'; }
-          results.push({ label: 'AKI Stage', value: stage, interpretation: `Cr上昇: ${rise.toFixed(2)} mg/dL (×${ratio.toFixed(1)})`, color });
+          const baseNote = baseEstimated ? '（ベースライン推定値 1.0 mg/dL使用）' : '';
+          results.push({ label: 'AKI Stage', value: stage, interpretation: `Cr上昇: ${rise.toFixed(2)} mg/dL (×${ratio.toFixed(1)})${baseNote}`, color });
         }
         if (!isNaN(bun) && !isNaN(cr)) {
           const bunCrRatio = bun / cr;

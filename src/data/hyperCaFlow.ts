@@ -60,7 +60,7 @@ export const hyperCaFlow: WorkupFlowDef = {
     {
       id: 'step2',
       title: 'Step 2: PTH測定（最重要）',
-      description: 'PTHで副甲状腺性 vs 非副甲状腺性を鑑別します',
+      description: 'PTHで副甲状腺性 vs 非副甲状腺性を鑑別。高Ca下でPTH > 30 pg/mLは「不適切に非抑制」→ 副甲状腺性を疑う',
       type: 'input',
       inputs: [
         { key: 'pth', label: 'intact PTH', unit: 'pg/mL' },
@@ -76,8 +76,8 @@ export const hyperCaFlow: WorkupFlowDef = {
           results.push({
             label: 'PTH',
             value: `${pth} pg/mL`,
-            interpretation: pth > 65 ? '高値 → 副甲状腺由来の高Ca（PHPT・FHH）' : pth < 15 ? '抑制 → 非副甲状腺性（悪性腫瘍・VitD中毒・サルコイドーシス）' : '不適切正常（高Ca下でPTH非抑制 → PHPT示唆）',
-            color: (pth > 65 ? 'yellow' : pth < 15 ? 'red' : 'yellow') as 'yellow' | 'red',
+            interpretation: pth > 65 ? '高値 → 副甲状腺由来の高Ca（PHPT・FHH）' : pth > 30 ? '不適切正常/軽度高値（高Ca下でPTH > 30は非抑制 → PHPT示唆）' : pth < 15 ? '抑制 → 非副甲状腺性（悪性腫瘍・VitD中毒・サルコイドーシス）' : '正常低値 → 非副甲状腺性を疑う',
+            color: (pth > 30 ? 'yellow' : 'red') as 'yellow' | 'red',
           });
         }
         if (!isNaN(p)) {

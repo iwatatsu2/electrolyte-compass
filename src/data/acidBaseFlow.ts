@@ -74,7 +74,7 @@ export const acidBaseFlow: WorkupFlowDef = {
         { key: 'na', label: 'Na', unit: 'mEq/L' },
         { key: 'cl', label: 'Cl', unit: 'mEq/L' },
         { key: 'hco3', label: 'HCO₃', unit: 'mEq/L' },
-        { key: 'alb', label: 'Alb（任意）', unit: 'g/dL' },
+        { key: 'alb', label: 'Alb', unit: 'g/dL', optional: true, note: '未入力時はAlb 4.0 g/dLとして計算' },
       ],
       calc: (v) => {
         const na = parseFloat(v.na);

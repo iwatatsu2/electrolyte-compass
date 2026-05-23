@@ -22,14 +22,22 @@ export const hyperNaFlow: WorkupFlowDef = {
       inputs: [
         { key: 'na', label: 'Na', unit: 'mEq/L' },
         { key: 'bw', label: '体重', unit: 'kg' },
-        { key: 'sex_f', label: '女性なら1・男性なら0', unit: '' },
+        { key: 'sex_f', label: '性別（女性=1, 男性=0）', unit: '', note: '高齢者（65歳以上）は係数が低下（男性0.5, 女性0.45）' },
+        { key: 'elderly', label: '高齢者（65歳以上=1, 未満=0）', unit: '', optional: true, note: '未入力時は非高齢として計算' },
       ],
       calc: (v) => {
         const na = parseFloat(v.na);
         const bw = parseFloat(v.bw);
-        const isFemale = parseFloat(v.sex_f) === 1;
-        if (isNaN(na) || isNaN(bw)) return [];
-        const tbwFraction = isFemale ? 0.5 : 0.6;
+        const sexF = parseFloat(v.sex_f);
+        if (isNaN(na) || isNaN(bw) || isNaN(sexF)) return [];
+        const isFemale = sexF === 1;
+        const isElderly = parseFloat(v.elderly) === 1;
+        let tbwFraction: number;
+        if (isElderly) {
+          tbwFraction = isFemale ? 0.45 : 0.5;
+        } else {
+          tbwFraction = isFemale ? 0.5 : 0.6;
+        }
         const tbw = bw * tbwFraction;
         const fwd = tbw * (na / 140 - 1);
         let severity = '';

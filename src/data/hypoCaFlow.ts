@@ -150,8 +150,11 @@ export const hypoCaFlow: WorkupFlowDef = {
         const vitd = parseFloat(v.vitd);
         const cr = parseFloat(v.cr);
         if (isNaN(vitd) && isNaN(cr)) return 'step3_high_pth';
+        // CKD + VitD欠乏の合併を考慮
+        if (!isNaN(cr) && cr > 2.0 && !isNaN(vitd) && vitd < 20) return 'result_ckd_mbd_vitd';
         if (!isNaN(cr) && cr > 2.0) return 'result_ckd_mbd';
         if (!isNaN(vitd) && vitd < 20) return 'result_vitd_deficiency';
+        if (!isNaN(vitd) && vitd < 30) return 'result_vitd_insufficiency';
         return 'result_php';
       },
     },
@@ -228,6 +231,24 @@ export const hypoCaFlow: WorkupFlowDef = {
       detail: 'CKDでの活性型VitD産生低下（1α水酸化酵素障害）＋高P血症（GFR低下）→ 低Ca＋二次性PTH上昇。長期放置で線維性骨炎・骨軟化症・転移性石灰化。',
       treatment: 'P制限食＋リン吸着薬（炭酸Ca・炭酸ランタン・スベラム）。活性型VitD（アルファカルシドール）。透析患者ではシナカルセト（擬似Ca受容体作動薬）。',
       resultColor: 'red',
+    },
+    {
+      id: 'result_ckd_mbd_vitd',
+      type: 'result',
+      title: '診断: CKD-MBD + ビタミンD欠乏合併',
+      diagnosis: 'CKD-MBD + ビタミンD欠乏（複合要因）',
+      detail: 'CKDによる活性型VitD産生障害に加え、25-OH VitDも低値（< 20 ng/mL）。CKD患者ではVitD欠乏が高頻度に合併し、低Caをさらに悪化させる。KDIGO 2017ガイドラインでは25-OH VitDの測定と補充を推奨。',
+      treatment: 'まず天然型VitD₃（コレカルシフェロール）補充で25-OH VitDを30 ng/mL以上に。その後、活性型VitD（アルファカルシドール）を追加。P制限食＋リン吸着薬。PTH管理にシナカルセト。',
+      resultColor: 'red',
+    },
+    {
+      id: 'result_vitd_insufficiency',
+      type: 'result',
+      title: '診断: ビタミンD不足（境界域）',
+      diagnosis: 'ビタミンD不足（25-OH VitD 20〜30 ng/mL）',
+      detail: '明確な欠乏（< 20）ではないが不足状態。PTH高値＋低Ca＋VitD不足の組み合わせでは、VitD補充で改善する可能性がある。偽性副甲状腺機能低下症（PHP）との鑑別のため、VitD補充後の反応を評価する。',
+      treatment: 'VitD₃（コレカルシフェロール）1000〜2000 IU/日で補充。2〜3ヶ月後に再検。改善なければPHP精査（尿中cAMP・Ellsworth-Howard試験）。',
+      resultColor: 'yellow',
     },
   ],
 };

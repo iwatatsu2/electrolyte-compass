@@ -289,7 +289,7 @@ function InputStep({ step, onComplete }: InputStepProps) {
           onClick={handleNext}
           disabled={!allFilled}
           className="w-full py-2 rounded text-sm font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-          style={{ backgroundColor: allFilled ? ACCENT : undefined }}
+          style={{ backgroundColor: allFilled ? ACCENT : '#6b7280' }}
         >
           次へ →
         </button>
@@ -424,7 +424,7 @@ export function WorkupFlow({ def }: WorkupFlowProps) {
 
       {/* Current step */}
       {currentStep.type === 'input' && (
-        <InputStep step={currentStep} onComplete={handleInputComplete} />
+        <InputStep key={currentStepId} step={currentStep} onComplete={handleInputComplete} />
       )}
       {currentStep.type === 'select' && (
         <SelectStep step={currentStep} onComplete={handleSelectComplete} />
