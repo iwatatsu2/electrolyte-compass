@@ -201,7 +201,7 @@ export default function App() {
 
         {/* メインコンテンツ */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4 max-w-2xl mx-auto">
+          <div className="p-4 max-w-2xl lg:max-w-4xl mx-auto">
             {/* セクションタイトル */}
             {currentSection && (
               <div className="mb-4">
