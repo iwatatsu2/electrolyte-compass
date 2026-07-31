@@ -14,9 +14,9 @@ import { Section10_AKI } from '@/sections/Section10_AKI';
 import { Section11_Author } from '@/sections/Section11_Author';
 import { InstallBanner } from '@/components/InstallBanner';
 
-const DM_URL = 'https://iwatatsu2.github.io/dm-compass/';
+const DM_URL = 'https://dm-compass.vercel.app/';
 const ENDO_URL = 'https://endoguide.vercel.app/endocrine';
-const EC_URL = 'https://iwatatsu2.github.io/electrolyte-compass/';
+const EC_URL = 'https://electrolyte-compass.vercel.app/';
 
 function qrSrc(url: string) {
   return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=ffffff&bgcolor=120d06&data=${encodeURIComponent(url)}`;

@@ -5,7 +5,7 @@ const CACHE_NAME = `electrolyte-compass-${CACHE_VERSION}`;
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(['/electrolyte-compass/', '/electrolyte-compass/index.html', '/electrolyte-compass/manifest.json']);
+      return cache.addAll(['/', '/index.html', '/manifest.json']);
     })
   );
   self.skipWaiting();

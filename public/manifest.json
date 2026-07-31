@@ -2,18 +2,18 @@
   "name": "Electrolyte Compass",
   "short_name": "Electrolyte Compass",
   "description": "電解質異常の鑑別・計算ツール",
-  "start_url": "/electrolyte-compass/",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#f97316",
   "icons": [
     {
-      "src": "/electrolyte-compass/icon.png",
+      "src": "/icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/electrolyte-compass/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

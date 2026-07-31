@@ -10,7 +10,7 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "src"),
     },
   },
-  base: "/electrolyte-compass/",
+  base: process.env.GITHUB_PAGES === "true" ? "/electrolyte-compass/" : "/",
   build: {
     outDir: "dist",
     emptyOutDir: true,

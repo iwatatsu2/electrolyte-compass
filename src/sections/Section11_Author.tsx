@@ -17,7 +17,16 @@ export function Section11_Author() {
           <p>内分泌・代謝内科専門医として日々の臨床で感じた「使えるリファレンスが欲しい」という思いからこのアプリを作成しました。</p>
           <p>電解質異常は研修医から専門医まで、日常診療で頻繁に遭遇します。計算式と鑑別フローをいつでもすぐ参照できるよう設計しました。</p>
         </div>
-        <div className="mt-4 pt-4 border-t border-border">
+        <div className="mt-4 pt-4 border-t border-border space-y-2">
+          <a
+            href="https://driwatatsu-hp.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+          >
+            <span>🌐</span>
+            <span>公式サイト（アプリ・研究・講演情報）</span>
+          </a>
           <a
             href="https://www.instagram.com/dr.iwatatsu"
             target="_blank"
